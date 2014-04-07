@@ -7,6 +7,8 @@ Similar to [level-store](https://github.com/juliangruber/level-store) but stream
 
 [![build status](https://secure.travis-ci.org/mafintosh/level-blobs.png)](http://travis-ci.org/mafintosh/level-blobs)
 
+[![browser support](https://ci.testling.com/mafintosh/level-blobs.png)](https://ci.testling.com/mafintosh/level-blobs
+
 ## Usage
 
 ``` js
