@@ -1,0 +1,15 @@
+{
+  "name": "level-blobs",
+  "version": "0.0.0",
+  "description": "Save binary blobs in level and stream then back. Features random byte access and more",
+  "dependencies": {
+    "once": "^1.3.0",
+    "readable-stream": "^1.0.26-4"
+  },
+  "devDependencies": {
+    "tape": "^2.12.3"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  }
+}
