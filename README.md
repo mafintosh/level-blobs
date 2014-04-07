@@ -5,6 +5,8 @@ Similar to [level-store](https://github.com/juliangruber/level-store) but stream
 
 	npm install level-blobs
 
+[![build status](https://secure.travis-ci.org/mafintosh/level-blobs.png)](http://travis-ci.org/mafintosh/level-blobs)
+
 ## Usage
 
 ``` js
