@@ -1,8 +1,9 @@
 var tape = require('tape');
-var memdb = require('memdb');
+var levelup = require('levelup');
+var memdown = require('memdown');
 
 var blobs = function() {
-	return require('../')(memdb());
+	return require('../')(levelup('mem', {db:memdown}));
 };
 
 var allocer = function() {
