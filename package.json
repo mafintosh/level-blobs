@@ -1,7 +1,7 @@
 {
   "name": "level-blobs",
   "version": "0.0.0",
-  "description": "Save binary blobs in level and stream then back. Features random byte access and more",
+  "description": "Save binary blobs in level and stream then back",
   "repository": "git://github.com/mafintosh/level-blobs.git",
   "keywords": [
  	"level",
