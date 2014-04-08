@@ -64,7 +64,7 @@ tape('random access', function(t) {
 		});
 	});
 
-	for (var i = 0; i < 25; i++) {
+	for (var i = 0; i < 3; i++) {
 		var b = alloc();
 		output.push(b);
 		ws.write(b);
@@ -91,12 +91,12 @@ tape('append', function(t) {
 			});
 			rs.on('end', function() {
 				t.same(Buffer.concat(input).length, Buffer.concat(output).length);
-				t.same(Buffer.concat(input), Buffer.concat(output));
+				t.same(Buffer.concat(input).toString('hex'), Buffer.concat(output).toString('hex'));
 				t.end();
 			});
 		});
 
-		for (var i = 0; i < 25; i++) {
+		for (var i = 0; i < 3; i++) {
 			var b = alloc();
 			output.push(b);
 			ws.write(b);
@@ -105,7 +105,7 @@ tape('append', function(t) {
 		ws.end();
 	});
 
-	for (var i = 0; i < 25; i++) {
+	for (var i = 0; i < 3; i++) {
 		var b = alloc();
 		output.push(b);
 		ws.write(b);
