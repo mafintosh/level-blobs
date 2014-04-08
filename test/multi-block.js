@@ -58,6 +58,7 @@ tape('random access', function(t) {
 			input.push(data);
 		});
 		rs.on('end', function() {
+			t.same(Buffer.concat(input).length, Buffer.concat(output).slice(77777).length);
 			t.same(Buffer.concat(input), Buffer.concat(output).slice(77777));
 			t.end();
 		});
@@ -89,6 +90,7 @@ tape('append', function(t) {
 				input.push(data);
 			});
 			rs.on('end', function() {
+				t.same(Buffer.concat(input).length, Buffer.concat(output).length);
 				t.same(Buffer.concat(input), Buffer.concat(output));
 				t.end();
 			});
