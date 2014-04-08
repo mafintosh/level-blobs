@@ -4,6 +4,16 @@ var util = require('util');
 var once = require('once');
 
 var EMPTY = new Buffer(0);
+var ENCODER = {
+	encode: function(data) {
+		return typeof data === 'string' ? data = new Buffer(data) : data;
+	},
+	decode: function(data) {
+		return Buffer.isBuffer(data) ? data : new Buffer(data);
+	},
+	buffer: true,
+	type: 'raw'
+};
 
 var noop = function() {};
 
@@ -51,7 +61,7 @@ module.exports = function(db, opts) {
 
 		if (reservations[key]) return onreservation(reservations[key]);
 
-		db.get(key, {valueEncoding:'binary'}, function(err, block) {
+		db.get(key, {valueEncoding:ENCODER}, function(err, block) {
 			if (err && !err.notFound) return cb(err);
 			if (!reservations[key]) reservations[key] = {locks:0, block:block};
 			onreservation(reservations[key]);
@@ -132,7 +142,8 @@ module.exports = function(db, opts) {
 			self.batch.push({
 				type: 'put',
 				key: key,
-				value: block
+				value: block,
+				valueEncoding: ENCODER
 			});
 
 			if (!force && self.batch.length < maxBatch) return cb();
@@ -233,7 +244,7 @@ module.exports = function(db, opts) {
 		this._reader = db.createReadStream({
 			gte: key,
 			lt: name+'\xff\xff',
-			valueEncoding: 'binary'
+			valueEncoding: ENCODER
 		});
 
 		var onblock = function(val) {
@@ -333,7 +344,7 @@ module.exports = function(db, opts) {
 
 		keys.on('end', function() {
 			if (!latest) return cb(null, 0);
-			db.get(latest, {valueEncoding:'binary'}, function(err, val) {
+			db.get(latest, {valueEncoding:ENCODER}, function(err, val) {
 				if (err && err.notFound) return cb(null, 0);
 				if (err) return cb(err);
 
