@@ -65,3 +65,19 @@ tape('append', function(t) {
 		});
 	});
 });
+
+tape('write read write read', function(t) {
+	var bl = blobs();
+
+	bl.write('test', 'hello', function() {
+		bl.read('test', function(err, buf) {
+			t.same(buf.toString(), 'hello');
+			bl.write('test', 'world', function() {
+				bl.read('test', function(err, buf) {
+					t.same(buf.toString(), 'world');
+					t.end();
+				});
+			});
+		});
+	});
+})
