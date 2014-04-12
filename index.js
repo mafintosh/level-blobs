@@ -1,5 +1,6 @@
 var Writable = require('readable-stream/writable');
 var Readable = require('readable-stream/readable');
+var peek = require('level-peek');
 var util = require('util');
 var once = require('once');
 
@@ -109,19 +110,21 @@ module.exports = function(db, opts) {
 	WriteStream.prototype._truncate = function(batch, key, cb) {
 		cb = once(cb);
 
+		var dels = [];
 		var keys = db.createKeyStream({
-			gt: key,
-			lt: this.name+'\xff\xff'
+			start: key,
+			end: this.name+'\xff\xff'
 		});
 
 		keys.on('error', cb);
 
 		keys.on('data', function(key) {
-			batch.push({type:'del', key:key});
+			dels.push({type:'del', key:key});
 		});
 
 		keys.on('end', function() {
-			db.batch(batch, cb);
+			dels.push.apply(dels, batch);
+			db.batch(dels, cb);
 		});
 	};
 
@@ -242,8 +245,8 @@ module.exports = function(db, opts) {
 		this._destroyed = false;
 
 		this._reader = db.createReadStream({
-			gte: key,
-			lt: name+'\xff\xff',
+			start: key,
+			end: name+'\xff\xff',
 			valueEncoding: ENCODER
 		});
 
@@ -310,8 +313,8 @@ module.exports = function(db, opts) {
 
 		var batch = [];
 		var keys = db.createKeyStream({
-			gt: name+'\xff',
-			lt: name+'\xff\xff'
+			start: name+'\xff',
+			end: name+'\xff\xff'
 		});
 
 		keys.on('error', cb);
@@ -326,30 +329,15 @@ module.exports = function(db, opts) {
 	};
 
 	blobs.size = function(name, cb) {
-		cb = once(cb);
+		peek.last(db, {
+			end: name+'\xff\xff',
+			valueEncoding:ENCODER
+		}, function(err, latest, val) {
+			if (err && err.message === 'range not found') return cb(null, 0);
+			if (err) return cb(err);
+			if (latest.slice(0, name.length+1) !== name+'\xff') return cb(null, 0);
 
-		var latest;
-		var keys = db.createKeyStream({
-			gt: name+'\xff',
-			lt: name+'\xff\xff',
-			limit:1,
-			reverse: true
-		});
-
-		keys.on('error', cb);
-
-		keys.on('data', function(key) {
-			latest = key;
-		});
-
-		keys.on('end', function() {
-			if (!latest) return cb(null, 0);
-			db.get(latest, {valueEncoding:ENCODER}, function(err, val) {
-				if (err && err.notFound) return cb(null, 0);
-				if (err) return cb(err);
-
-				cb(null, parseInt(latest.toString().slice(name.length+1), 16) * blockSize + val.length);
-			});
+			cb(null, parseInt(latest.toString().slice(name.length+1), 16) * blockSize + val.length);
 		});
 	};
 
