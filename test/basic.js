@@ -85,10 +85,24 @@ tape('write read write read', function(t) {
 tape('write + size', function(t) {
 	var bl = blobs();
 
-	bl.write('hello', 'world', function() {
-		bl.size('hello', function(err, size) {
-			t.same(size, 5);
-			t.end();
+	bl.size('bar', function(err, size) {
+		t.same(size, 0);
+		bl.write('bar', 'world', function() {
+			bl.size('bar', function(err, size) {
+				t.same(size, 5);
+				bl.size('foo', function(err, size) {
+					t.same(size, 0);
+					bl.write('baz', 'hi', function() {
+						bl.size('baz', function(err, size) {
+							t.same(size, 2);
+							bl.size('bar', function(err, size) {
+								t.same(size, 5);
+								t.end();
+							});
+						});
+					});
+				});
+			});
 		});
 	});
 });
