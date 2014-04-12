@@ -39,7 +39,7 @@ module.exports = function(db, opts) {
 	var blank = new Buffer(blockSize);
 
 	var reservations = {};
-	var mutateBlock = function(key, offset, block, cb) {
+	var mutateBlock = function(key, offset, block, append, cb) {
 		var release = function() {
 			if (!--reservations[key].locks) delete reservations[key];
 		};
@@ -47,7 +47,7 @@ module.exports = function(db, opts) {
 		var onreservation = function(r) {
 			r.locks++;
 
-			if (!r.block && offset + block.length < blockSize) {
+			if (!r.block && !offset) {
 				r.block = block;
 				cb(null, r.block, release);
 				return;
@@ -57,6 +57,8 @@ module.exports = function(db, opts) {
 			if (r.block.length < offset + block.length) r.block = expand(r.block, offset + block.length);
 
 			block.copy(r.block, offset);
+
+			if (!append && offset + block.length < r.block.length) r.block = r.block.slice(0, offset+block.length);
 			cb(null, r.block, release);
 		};
 
@@ -154,10 +156,10 @@ module.exports = function(db, opts) {
 		};
 
 		if (!offset && block.length === blockSize) return append(block, false, cb);
-		if (!this.append) return append(block, false, cb);
+		if (!offset && !this.append) return append(block, false, cb);
 
 		// partial write
-		mutateBlock(key, offset, block, function(err, block, release) {
+		mutateBlock(key, offset, block, this.append, function(err, block, release) {
 			if (err) return cb(err);
 			append(block, true, function(err) {
 				release();
