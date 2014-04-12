@@ -80,4 +80,15 @@ tape('write read write read', function(t) {
 			});
 		});
 	});
-})
+});
+
+tape('write + size', function(t) {
+	var bl = blobs();
+
+	bl.write('hello', 'world', function() {
+		bl.size('hello', function(err, size) {
+			t.same(size, 5);
+			t.end();
+		});
+	});
+});
