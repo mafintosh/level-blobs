@@ -330,6 +330,7 @@ module.exports = function(db, opts) {
 
 	blobs.size = function(name, cb) {
 		peek.last(db, {
+			start: name+'\xff',
 			end: name+'\xff\xff',
 			valueEncoding:ENCODER
 		}, function(err, latest, val) {
