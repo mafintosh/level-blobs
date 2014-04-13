@@ -38,6 +38,8 @@ module.exports = function(db, opts) {
 	var maxBatch = opts.batch || 100;
 	var blank = new Buffer(blockSize);
 
+	db.put('\x00', 'ignore', noop); // memdown#12 workaround
+
 	var reservations = {};
 	var mutateBlock = function(key, offset, block, append, cb) {
 		var release = function() {
