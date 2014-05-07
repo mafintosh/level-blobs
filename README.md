@@ -5,7 +5,8 @@ Similar to [level-store](https://github.com/juliangruber/level-store) but stream
 
 	npm install level-blobs
 
-[![build status](https://secure.travis-ci.org/mafintosh/level-blobs.png)](http://travis-ci.org/mafintosh/level-blobs)
+[![build status](http://img.shields.io/travis/mafintosh/level-filesystem.svg?style=flat)](http://travis-ci.org/mafintosh/level-blobs)
+![dat](http://img.shields.io/badge/Development%20sponsored%20by-dat-green.svg?style=flat)
 
 [![browser support](https://ci.testling.com/mafintosh/level-blobs.png)](https://ci.testling.com/mafintosh/level-blobs)
 
