@@ -146,12 +146,14 @@ module.exports = function(db, opts) {
 		var key = this.name+'\xff'+pad(index);
 
 		var append = function(block, force, cb) {
-			self.batch.push({
-				type: 'put',
-				key: key,
-				value: block,
-				valueEncoding: ENCODER
-			});
+			if (block.length) {
+				self.batch.push({
+					type: 'put',
+					key: key,
+					value: block,
+					valueEncoding: ENCODER
+				});
+			}
 
 			if (!force && self.batch.length < maxBatch) return cb();
 			return self._flush(cb);
