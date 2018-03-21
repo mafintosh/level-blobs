@@ -3,14 +3,16 @@ var Readable = require('readable-stream/readable');
 var peek = require('level-peek');
 var util = require('util');
 var once = require('once');
+var bufferAlloc = require('buffer-alloc');
+var bufferFrom = require('buffer-from');
 
-var EMPTY = new Buffer(0);
+var EMPTY = bufferAlloc(0);
 var ENCODER = {
 	encode: function(data) {
-		return typeof data === 'string' ? data = new Buffer(data) : data;
+		return typeof data === 'string' ? data = bufferFrom(data) : data;
 	},
 	decode: function(data) {
-		return Buffer.isBuffer(data) ? data : new Buffer(data);
+		return Buffer.isBuffer(data) ? data : bufferFrom(data);
 	},
 	buffer: true,
 	type: 'raw'
@@ -24,7 +26,7 @@ var pad = function(n) {
 };
 
 var expand = function(buf, len) {
-	var tmp = new Buffer(len);
+	var tmp = bufferAlloc(len);
 	buf.copy(tmp);
 	return tmp;
 };
@@ -36,7 +38,7 @@ module.exports = function(db, opts) {
 
 	var blockSize = opts.blockSize || 65536;
 	var maxBatch = opts.batch || 100;
-	var blank = new Buffer(blockSize);
+	var blank = bufferAlloc(blockSize);
 
 	db.put('\x00', 'ignore', noop); // memdown#12 workaround
 
@@ -55,7 +57,7 @@ module.exports = function(db, opts) {
 				return;
 			}
 
-			if (!r.block) r.block = new Buffer(blockSize);
+			if (!r.block) r.block = bufferAlloc(blockSize);
 			if (r.block.length < offset + block.length) r.block = expand(r.block, offset + block.length);
 
 			block.copy(r.block, offset);
