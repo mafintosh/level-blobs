@@ -1,6 +1,7 @@
 var tape = require('tape');
 var levelup = require('levelup');
 var memdown = require('memdown');
+var bufferAlloc = require('buffer-alloc');
 
 var blobs = function() {
 	return require('../')(levelup('mem', {db:memdown}));
@@ -9,7 +10,7 @@ var blobs = function() {
 var allocer = function() {
 	var i = 0;
 	return function() {
-		var buf = new Buffer(50000);
+		var buf = bufferAlloc(50000);
 		buf.fill(i++);
 		return buf;
 	};
